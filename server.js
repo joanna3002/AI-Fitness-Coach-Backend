@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -10,7 +9,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// Use environment variables
+const groq = new Groq({ 
+  apiKey: process.env.GROQ_API_KEY, 
+  projectId: process.env.GROQ_PROJECT_ID // add project ID
+});
+
 const PORT = process.env.PORT || 5000;
 
 // ---------------------------
@@ -47,7 +51,7 @@ app.post("/api/fitness", async (req, res) => {
     const completion = await groq.chat.completions.create({
       model: "openai/gpt-oss-20b",
       messages: [
-        ...messages, // previous chat history
+        ...messages,
         { role: "user", content: `${aiPrompt} User gender: ${gender || "unspecified"}. ${allergyText} Prompt: "${prompt}"` }
       ],
       temperature: 1,
